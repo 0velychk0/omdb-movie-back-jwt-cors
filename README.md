@@ -2,6 +2,8 @@
 
 Link to main example with explanation:
 - https://www.javainuse.com/spring/boot-jwt
+- https://medium.com/@robertt.taylor9517/java-spring-jwt-security-and-cors-81cfa3e8cf1b
+- https://www.toptal.com/spring/spring-security-tutorial
 
 1) Send request to localhost:8080/test to check that endpoint is not available without authorization
 
