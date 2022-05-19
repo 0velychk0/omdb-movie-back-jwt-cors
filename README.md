@@ -1,4 +1,4 @@
-# spring-boot-jwt-h2db-minimal-example
+# omdb-movie-back-jwt-cors
 
 Link to main example with explanation:
 - https://www.javainuse.com/spring/boot-jwt
