@@ -1,14 +1,12 @@
 package com.ovelychko.auth;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "AUTH_USER")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
     private long id;
     @Column(name = "USERNAME", nullable = false, unique = true)

@@ -1,9 +1,12 @@
 package com.ovelychko.controller;
 
+import com.ovelychko.auth.User;
+import com.ovelychko.auth.UserRepository;
 import com.ovelychko.config.JwtTokenUtil;
 import com.ovelychko.model.JwtRequest;
 import com.ovelychko.model.JwtResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,6 +14,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,13 +26,38 @@ import java.util.Objects;
 public class JwtAuthenticationController {
 
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @RequestMapping(value = "/signup", method = RequestMethod.POST)
+    public ResponseEntity<?> signup(@RequestBody JwtRequest authenticationRequest)
+            throws Exception {
+
+        if (userRepository.findByUsername(authenticationRequest.getUsername()) != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User-name already exist");
+        }
+
+        User user = new User();
+        user.setUsername(authenticationRequest.getUsername());
+        user.setPassword(passwordEncoder.encode(authenticationRequest.getPassword()));
+
+        userRepository.save(user);
+        userRepository.flush();
+
+        final UserDetails userDetailsAgain = userDetailsService
+                .loadUserByUsername(authenticationRequest.getUsername());
+
+        final String token = jwtTokenUtil.generateToken(userDetailsAgain);
+
+        return ResponseEntity.ok(new JwtResponse(token));
+    }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)

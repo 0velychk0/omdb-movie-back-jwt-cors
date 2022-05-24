@@ -11,9 +11,12 @@ public class LandonUserPrincipal implements UserDetails {
 
     private final User user;
 
+    private final String details;
+
     public LandonUserPrincipal(User user) {
         super();
         this.user = user;
+        this.details = "test details";
     }
 
     @Override
